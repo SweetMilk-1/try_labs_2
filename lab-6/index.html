@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Molecules animation on js</title>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+  </head>
+  <body>
+    <canvas id="game" width="500" height="400"></canvas>
+
+    <script>
+      var game;
+
+      window.onload = function (e) {
+        game = new Game().start();
+        game.loadBalls();
+      };
+
+      function Game() {
+        this.FPS = 30;
+        this.speed = 10;
+
+        var colors = [
+          'red',
+          'blue',
+          'yellow',
+          'orange',
+          'purple',
+          'cyan',
+          'green',
+          'pink',
+        ];
+
+        this.canvas = ge('game');
+        this.context = this.canvas.getContext('2d');
+
+        this.balls = [];
+
+        var that = this;
+
+        this.getColors = function () {
+          return colors;
+        };
+
+        var resizeCanvas = function () {
+          var c = ge('game');
+          c.width = window.innerWidth - 18;
+          c.height = window.innerHeight - 18;
+        };
+
+        var onWindowResize = function (e) {
+          resizeCanvas();
+        };
+
+        var eventHandlers = function () {
+          window.onresize = onWindowResize;
+        };
+
+        var output = function (str, x, y) {
+          x = x || 10;
+          y = y || 10;
+          that.context.fillText(str, x, y);
+        };
+
+        var drawBalls = function () {
+          for (var i = 0; i < that.balls.length; i++) {
+            var ball = that.balls[i];
+
+            ball.x = ball.x + ball.vx;
+            ball.y = ball.y + ball.vy;
+
+            if (ball.x + ball.r >= that.canvas.width) {
+              ball.vx = -ball.vx;
+            }
+            if (ball.x - ball.r <= 0) {
+              ball.vx = -ball.vx;
+            }
+            if (ball.y + ball.r >= that.canvas.height) {
+              ball.vy = -ball.vy;
+            }
+            if (ball.y - ball.r <= 0) {
+              ball.vy = -ball.vy;
+            }
+
+            that.context.beginPath();
+            that.context.arc(ball.x, ball.y, ball.r, 0, 2 * Math.PI, false);
+            that.context.fillStyle = ball.color;
+            that.context.fill();
+          }
+        };
+
+        var gameStep = function () {
+          that.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
+
+          drawBalls();
+        };
+
+        var gameLoop = function (fn) {
+          var then = +new Date();
+
+          var interval = 1000 / that.FPS;
+
+          window.requestAnimationFrame =
+            window.requestAnimationFrame ||
+            window.wekitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function (fn) {
+              return window.setTimeout(fn, 1000 / 60);
+            };
+
+          return (function loop() {
+            window.requestAnimationFrame(loop);
+
+            var now = +new Date();
+            var delta = now - then;
+
+            if (delta > interval) {
+              then = now - (delta % interval);
+
+              //ge('delta').innerHTML = delta;
+
+              fn();
+            }
+          })();
+        };
+
+        this.loadBalls = function () {
+          for (var i = 0; i < 100; i++) {
+            that.balls.push({
+              x: Math.ceil(Math.random() * that.canvas.width),
+              y: Math.ceil(Math.random() * that.canvas.height),
+              r: 20,
+              vx: Math.floor(Math.random() * that.speed),
+              vy: Math.floor(Math.random() * that.speed),
+              color: colors[Math.floor(Math.random() * colors.length)],
+            });
+          }
+        };
+
+        this.start = function () {
+          console.log('game started...');
+
+          eventHandlers();
+          resizeCanvas();
+
+          gameLoop(gameStep);
+
+          return that;
+        };
+
+        this.initHandlers = function () {
+          console.log('init...');
+        };
+      }
+      function ge(id) {
+        return document.getElementById(id);
+      }
+    </script>
+  </body>
+</html>
