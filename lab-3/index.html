@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .img {
+            border: 1px silver solid;
+        }
+    </style>
+</head>
+<body align="center">
+    <h1>Get image</h1>
+    <img src="https://via.placeholder.com/500" id="leo" width="500" height="500" class="img">
+    <hr>
+    <button onclick="getImage()">Get image</button>
+    <script>
+        function ge(id) {
+            return document.getElementById(id);
+        }
+
+        function getImage() {
+            ge('leo').setAttribute('src', 'https://picsum.photos/500/450')
+        }
+    </script>
+</body>
+</html>
